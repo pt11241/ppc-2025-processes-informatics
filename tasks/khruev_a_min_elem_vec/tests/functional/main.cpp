@@ -32,7 +32,7 @@ class KhruevAMinElemVecFuncTests : public ppc::util::BaseRunFuncTests<InType, Ou
     int height = -1;
     int channels = -1;
     std::vector<uint8_t> img;
-    // Read image
+    // Read image lalala
     {
       std::string abs_path = ppc::util::GetAbsoluteTaskPath(PPC_ID_khruev_a_min_elem_vec, "pic.jpg");
       auto *data = stbi_load(abs_path.c_str(), &width, &height, &channels, 0);
