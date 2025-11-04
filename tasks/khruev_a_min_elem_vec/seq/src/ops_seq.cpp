@@ -1,11 +1,10 @@
 #include "khruev_a_min_elem_vec/seq/include/ops_seq.hpp"
 
-#include <algorithm>
-#include <climits>
-#include <cstddef>
+#include <numeric>
 #include <vector>
 
 #include "khruev_a_min_elem_vec/common/include/common.hpp"
+#include "util/include/util.hpp"
 
 namespace khruev_a_min_elem_vec {
 
@@ -16,30 +15,46 @@ KhruevAMinElemVecSEQ::KhruevAMinElemVecSEQ(const InType &in) {
 }
 
 bool KhruevAMinElemVecSEQ::ValidationImpl() {
-  return (GetOutput() == 0);
+  return (GetInput() > 0) && (GetOutput() == 0);
 }
 
 bool KhruevAMinElemVecSEQ::PreProcessingImpl() {
-  return true;
+  GetOutput() = 2 * GetInput();
+  return GetOutput() > 0;
 }
 
 bool KhruevAMinElemVecSEQ::RunImpl() {
-  if (GetInput().empty()) {
-    GetOutput() = INT_MAX;
-    return true;
+  if (GetInput() == 0) {
+    return false;
   }
-  int mininmum = GetInput()[0];
-  size_t vec_size = GetInput().size();
-  for (size_t i = 1; i < vec_size; i++) {
-    mininmum = std::min(GetInput()[i], mininmum);
-  }
-  GetOutput() = mininmum;
 
-  return true;
+  for (InType i = 0; i < GetInput(); i++) {
+    for (InType j = 0; j < GetInput(); j++) {
+      for (InType k = 0; k < GetInput(); k++) {
+        std::vector<InType> tmp(i + j + k, 1);
+        GetOutput() += std::accumulate(tmp.begin(), tmp.end(), 0);
+        GetOutput() -= i + j + k;
+      }
+    }
+  }
+
+  const int num_threads = ppc::util::GetNumThreads();
+  GetOutput() *= num_threads;
+
+  int counter = 0;
+  for (int i = 0; i < num_threads; i++) {
+    counter++;
+  }
+
+  if (counter != 0) {
+    GetOutput() /= counter;
+  }
+  return GetOutput() > 0;
 }
 
 bool KhruevAMinElemVecSEQ::PostProcessingImpl() {
-  return true;
+  GetOutput() -= GetInput();
+  return GetOutput() > 0;
 }
 
 }  // namespace khruev_a_min_elem_vec

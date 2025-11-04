@@ -1,7 +1,5 @@
 #include <gtest/gtest.h>
 
-#include <cstddef>
-
 #include "khruev_a_min_elem_vec/common/include/common.hpp"
 #include "khruev_a_min_elem_vec/mpi/include/ops_mpi.hpp"
 #include "khruev_a_min_elem_vec/seq/include/ops_seq.hpp"
@@ -9,21 +7,16 @@
 
 namespace khruev_a_min_elem_vec {
 
-class KhruevAMinElemVecPerfTests : public ppc::util::BaseRunPerfTests<InType, OutType> {
-  const int kCount_ = 100000000;
-  InType input_data_;
-  // OutType expected_;
+class ExampleRunPerfTestProcesses : public ppc::util::BaseRunPerfTests<InType, OutType> {
+  const int kCount_ = 100;
+  InType input_data_{};
 
   void SetUp() override {
-    size_t size = kCount_;
-    for (size_t i = size; i >= 1; i--) {
-      input_data_.push_back(static_cast<int>(i));
-    }
-    // expected_ = 1;
+    input_data_ = kCount_;
   }
 
   bool CheckTestOutputData(OutType &output_data) final {
-    return 1 == output_data;
+    return input_data_ == output_data;
   }
 
   InType GetTestInputData() final {
@@ -31,7 +24,7 @@ class KhruevAMinElemVecPerfTests : public ppc::util::BaseRunPerfTests<InType, Ou
   }
 };
 
-TEST_P(KhruevAMinElemVecPerfTests, RunPerfModes) {
+TEST_P(ExampleRunPerfTestProcesses, RunPerfModes) {
   ExecuteTest(GetParam());
 }
 
@@ -40,8 +33,8 @@ const auto kAllPerfTasks =
 
 const auto kGtestValues = ppc::util::TupleToGTestValues(kAllPerfTasks);
 
-const auto kPerfTestName = KhruevAMinElemVecPerfTests::CustomPerfTestName;
+const auto kPerfTestName = ExampleRunPerfTestProcesses::CustomPerfTestName;
 
-INSTANTIATE_TEST_SUITE_P(RunPerf, KhruevAMinElemVecPerfTests, kGtestValues, kPerfTestName);
+INSTANTIATE_TEST_SUITE_P(RunModeTests, ExampleRunPerfTestProcesses, kGtestValues, kPerfTestName);
 
 }  // namespace khruev_a_min_elem_vec

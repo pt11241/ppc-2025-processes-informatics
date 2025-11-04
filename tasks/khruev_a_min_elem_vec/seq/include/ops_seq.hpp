@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 #include "khruev_a_min_elem_vec/common/include/common.hpp"
 #include "task/include/task.hpp"
 
@@ -15,7 +13,6 @@ class KhruevAMinElemVecSEQ : public BaseTask {
   explicit KhruevAMinElemVecSEQ(const InType &in);
 
  private:
-  std::vector<int> data_;
   bool ValidationImpl() override;
   bool PreProcessingImpl() override;
   bool RunImpl() override;

@@ -2,73 +2,71 @@
 
 #include <mpi.h>
 
-#include <algorithm>
-#include <climits>
+#include <numeric>
 #include <vector>
 
 #include "khruev_a_min_elem_vec/common/include/common.hpp"
+#include "util/include/util.hpp"
 
 namespace khruev_a_min_elem_vec {
 
 KhruevAMinElemVecMPI::KhruevAMinElemVecMPI(const InType &in) {
-  SetTypeOfTask(GetStaticTypeOfTask());  // mpi scoreboard
-  GetInput() = in;                       // dannie doljna bit vidna vsem func rodytelya and stabilizaciya
+  SetTypeOfTask(GetStaticTypeOfTask());
+  GetInput() = in;
   GetOutput() = 0;
 }
 
-bool KhruevAMinElemVecMPI::ValidationImpl() {  // input check
-  return GetOutput() == 0;
+bool KhruevAMinElemVecMPI::ValidationImpl() {
+  return (GetInput() > 0) && (GetOutput() == 0);
 }
 
 bool KhruevAMinElemVecMPI::PreProcessingImpl() {
-  return true;
+  GetOutput() = 2 * GetInput();
+  return GetOutput() > 0;
 }
 
 bool KhruevAMinElemVecMPI::RunImpl() {
-  const auto &input = GetInput();
-  if (input.empty()) {
-    GetOutput() = INT_MAX;
-    return true;
+  auto input = GetInput();
+  if (input == 0) {
+    return false;
   }
+
+  for (InType i = 0; i < GetInput(); i++) {
+    for (InType j = 0; j < GetInput(); j++) {
+      for (InType k = 0; k < GetInput(); k++) {
+        std::vector<InType> tmp(i + j + k, 1);
+        GetOutput() += std::accumulate(tmp.begin(), tmp.end(), 0);
+        GetOutput() -= i + j + k;
+      }
+    }
+  }
+
+  const int num_threads = ppc::util::GetNumThreads();
+  GetOutput() *= num_threads;
 
   int rank = 0;
-  int size = 0;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-  int n = static_cast<int>(input.size());
-  int int_part = n / size;
-  int remainder = n % size;
+  if (rank == 0) {
+    GetOutput() /= num_threads;
+  } else {
+    int counter = 0;
+    for (int i = 0; i < num_threads; i++) {
+      counter++;
+    }
 
-  std::vector<int> sendcounts(size);
-  std::vector<int> displs(size);
-
-  for (int i = 0; i < size; ++i) {
-    sendcounts[i] = int_part + (i < remainder ? 1 : 0);
-    displs[i] = (i == 0 ? 0 : displs[i - 1] + sendcounts[i - 1]);
+    if (counter != 0) {
+      GetOutput() /= counter;
+    }
   }
 
-  std::vector<int> local_chunk(sendcounts[rank] > 0 ? sendcounts[rank] : 1);
-  MPI_Scatterv(input.data(), sendcounts.data(), displs.data(), MPI_INT,
-               sendcounts[rank] > 0 ? local_chunk.data() : nullptr, sendcounts[rank], MPI_INT, 0, MPI_COMM_WORLD);
-
-  int local_min = INT_MAX;
-  if (sendcounts[rank] > 0) {
-    local_min = *std::min_element(local_chunk.begin(), local_chunk.begin() + sendcounts[rank]);
-  }
-
-  int global_min = 0;
-
-  MPI_Reduce(&local_min, &global_min, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
-  MPI_Bcast(&global_min, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
-  GetOutput() = global_min;
-
-  return true;
+  MPI_Barrier(MPI_COMM_WORLD);
+  return GetOutput() > 0;
 }
 
 bool KhruevAMinElemVecMPI::PostProcessingImpl() {
-  return true;
+  GetOutput() -= GetInput();
+  return GetOutput() > 0;
 }
 
 }  // namespace khruev_a_min_elem_vec
