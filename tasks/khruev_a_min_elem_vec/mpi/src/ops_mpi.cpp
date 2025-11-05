@@ -30,7 +30,7 @@ bool KhruevAMinElemVecMPI::RunImpl() {
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
   int global_size = GetInput().size();
-  
+
   std::vector<int> sendcounts(size), displacements(size);
   int displacement = 0;
   for (int i = 0; i < size; i++) {
@@ -42,8 +42,8 @@ bool KhruevAMinElemVecMPI::RunImpl() {
   int local_size = sendcounts[rank];
   std::vector<int> local_vec(local_size);
 
-  MPI_Scatterv(GetInput().data(), sendcounts.data(), displacements.data(), MPI_INT,
-               local_vec.data(), local_size, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Scatterv(GetInput().data(), sendcounts.data(), displacements.data(), MPI_INT, local_vec.data(), local_size,
+               MPI_INT, 0, MPI_COMM_WORLD);
 
   int local_min = std::numeric_limits<int>::max();
   if (!local_vec.empty()) {
