@@ -23,7 +23,7 @@ namespace khruev_a_min_elem_vec {
 class KhruevAMinElemVecFuncTests : public ppc::util::BaseRunFuncTests<InType, OutType, TestType> {
  public:
   static std::string PrintTestParam(const TestType &test_param) {
-    return std::to_string(std::get<0>(test_param)) + "_" + std::get<1>(test_param);
+    return test_param;
   }
 
  protected:
@@ -50,11 +50,11 @@ class KhruevAMinElemVecFuncTests : public ppc::util::BaseRunFuncTests<InType, Ou
 
 namespace {
 
-TEST_P(KhruevAMinElemVecFuncTests, MatmulFromPic) {
+TEST_P(KhruevAMinElemVecFuncTests, MinElemVecc) {
   ExecuteTest(GetParam());
 }
 
-const std::array<TestType, 3> kTestParam = {std::make_tuple(3, "3"), std::make_tuple(5, "5"), std::make_tuple(7, "7")};
+const std::array<TestType, 1> kTestParam = {"aaaaaaa"};
 
 const auto kTestTasksList = std::tuple_cat(
     ppc::util::AddFuncTask<KhruevAMinElemVecMPI, InType>(kTestParam, PPC_SETTINGS_khruev_a_min_elem_vec),
@@ -64,7 +64,7 @@ const auto kGtestValues = ppc::util::ExpandToValues(kTestTasksList);
 
 const auto kPerfTestName = KhruevAMinElemVecFuncTests::PrintFuncTestName<KhruevAMinElemVecFuncTests>;
 
-INSTANTIATE_TEST_SUITE_P(PicMatrixTests, KhruevAMinElemVecFuncTests, kGtestValues, kPerfTestName);
+INSTANTIATE_TEST_SUITE_P(MinElemVec, KhruevAMinElemVecFuncTests, kGtestValues, kPerfTestName);
 
 }  // namespace
 
