@@ -1,8 +1,9 @@
 #pragma once
 
+#include <vector>
+
 #include "khruev_a_min_elem_vec/common/include/common.hpp"
 #include "task/include/task.hpp"
-#include <vector>
 
 namespace khruev_a_min_elem_vec {
 

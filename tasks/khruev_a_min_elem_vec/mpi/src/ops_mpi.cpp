@@ -11,12 +11,12 @@
 namespace khruev_a_min_elem_vec {
 
 KhruevAMinElemVecMPI::KhruevAMinElemVecMPI(const InType &in) {
-  SetTypeOfTask(GetStaticTypeOfTask()); // mpi scoreboard
-  GetInput() = in; // dannie doljna bit vidna vsem func rodytelya and stabilizaciya
+  SetTypeOfTask(GetStaticTypeOfTask());  // mpi scoreboard
+  GetInput() = in;                       // dannie doljna bit vidna vsem func rodytelya and stabilizaciya
   GetOutput() = 0;
 }
 
-bool KhruevAMinElemVecMPI::ValidationImpl() { // input check
+bool KhruevAMinElemVecMPI::ValidationImpl() {  // input check
   return !GetInput().empty();
 }
 
@@ -25,6 +25,15 @@ bool KhruevAMinElemVecMPI::PreProcessingImpl() {
 }
 
 bool KhruevAMinElemVecMPI::RunImpl() {
+  int mininmum = GetInput()[0];
+  size_t vec_size = GetInput().size();
+  for (size_t i = 1; i < vec_size; i++) {
+    if (GetInput()[i] < mininmum) {
+      mininmum = GetInput()[i];
+    }
+  }
+  GetOutput() = mininmum;
+
   return true;
 }
 

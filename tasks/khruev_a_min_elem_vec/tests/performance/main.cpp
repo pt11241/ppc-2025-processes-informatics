@@ -12,10 +12,9 @@ class KhruevAMinElemVecPerfTests : public ppc::util::BaseRunPerfTests<InType, Ou
   InType input_data_{};
   OutType expected_;
 
-
   void SetUp() override {
     size_t size = 10;
-    for (size_t i = 1; i <= size; i++){
+    for (size_t i = 1; i <= size; i++) {
       input_data_.push_back(i);
     }
     expected_ = 1;

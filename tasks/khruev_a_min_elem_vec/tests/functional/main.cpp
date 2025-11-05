@@ -29,7 +29,7 @@ class KhruevAMinElemVecFuncTests : public ppc::util::BaseRunFuncTests<InType, Ou
  protected:
   void SetUp() override {
     size_t size = 10;
-    for (size_t i = 1; i <= size; i++){
+    for (size_t i = 1; i <= size; i++) {
       input_data_.push_back(i);
     }
     expected_ = 1;
@@ -56,9 +56,9 @@ TEST_P(KhruevAMinElemVecFuncTests, MatmulFromPic) {
 
 const std::array<TestType, 3> kTestParam = {std::make_tuple(3, "3"), std::make_tuple(5, "5"), std::make_tuple(7, "7")};
 
-const auto kTestTasksList =
-    std::tuple_cat(ppc::util::AddFuncTask<KhruevAMinElemVecMPI, InType>(kTestParam, PPC_SETTINGS_khruev_a_min_elem_vec),
-                   ppc::util::AddFuncTask<KhruevAMinElemVecSEQ, InType>(kTestParam, PPC_SETTINGS_khruev_a_min_elem_vec));
+const auto kTestTasksList = std::tuple_cat(
+    ppc::util::AddFuncTask<KhruevAMinElemVecMPI, InType>(kTestParam, PPC_SETTINGS_khruev_a_min_elem_vec),
+    ppc::util::AddFuncTask<KhruevAMinElemVecSEQ, InType>(kTestParam, PPC_SETTINGS_khruev_a_min_elem_vec));
 
 const auto kGtestValues = ppc::util::ExpandToValues(kTestTasksList);
 
