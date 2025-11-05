@@ -10,13 +10,19 @@ namespace khruev_a_min_elem_vec {
 class KhruevAMinElemVecPerfTests : public ppc::util::BaseRunPerfTests<InType, OutType> {
   const int kCount_ = 100;
   InType input_data_{};
+  OutType expected_;
+
 
   void SetUp() override {
-    input_data_ = kCount_;
+    size_t size = 10;
+    for (size_t i = 1; i <= size; i++){
+      input_data_.push_back(i);
+    }
+    expected_ = 1;
   }
 
   bool CheckTestOutputData(OutType &output_data) final {
-    return input_data_ == output_data;
+    return expected_ == output_data;
   }
 
   InType GetTestInputData() final {

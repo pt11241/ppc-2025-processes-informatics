@@ -28,30 +28,15 @@ class KhruevAMinElemVecFuncTests : public ppc::util::BaseRunFuncTests<InType, Ou
 
  protected:
   void SetUp() override {
-    int width = -1;
-    int height = -1;
-    int channels = -1;
-    std::vector<uint8_t> img;
-    // Read image lalala
-    {
-      std::string abs_path = ppc::util::GetAbsoluteTaskPath(PPC_ID_khruev_a_min_elem_vec, "pic.jpg");
-      auto *data = stbi_load(abs_path.c_str(), &width, &height, &channels, 0);
-      if (data == nullptr) {
-        throw std::runtime_error("Failed to load image: " + std::string(stbi_failure_reason()));
-      }
-      img = std::vector<uint8_t>(data, data + (static_cast<ptrdiff_t>(width * height * channels)));
-      stbi_image_free(data);
-      if (std::cmp_not_equal(width, height)) {
-        throw std::runtime_error("width != height: ");
-      }
+    size_t size = 10;
+    for (size_t i = 1; i <= size; i++){
+      input_data_.push_back(i);
     }
-
-    TestType params = std::get<static_cast<std::size_t>(ppc::util::GTestParamIndex::kTestParams)>(GetParam());
-    input_data_ = width - height + std::min(std::accumulate(img.begin(), img.end(), 0), channels);
+    expected_ = 1;
   }
 
   bool CheckTestOutputData(OutType &output_data) final {
-    return (input_data_ == output_data);
+    return (expected_ == output_data);
   }
 
   InType GetTestInputData() final {
@@ -59,7 +44,8 @@ class KhruevAMinElemVecFuncTests : public ppc::util::BaseRunFuncTests<InType, Ou
   }
 
  private:
-  InType input_data_ = 0;
+  InType input_data_;
+  OutType expected_;
 };
 
 namespace {

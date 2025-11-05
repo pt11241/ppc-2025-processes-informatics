@@ -2,6 +2,7 @@
 
 #include "khruev_a_min_elem_vec/common/include/common.hpp"
 #include "task/include/task.hpp"
+#include <vector>
 
 namespace khruev_a_min_elem_vec {
 
@@ -13,6 +14,7 @@ class KhruevAMinElemVecSEQ : public BaseTask {
   explicit KhruevAMinElemVecSEQ(const InType &in);
 
  private:
+  std::vector<int> _data;
   bool ValidationImpl() override;
   bool PreProcessingImpl() override;
   bool RunImpl() override;
