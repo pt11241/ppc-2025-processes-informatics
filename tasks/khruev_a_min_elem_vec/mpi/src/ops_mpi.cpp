@@ -24,7 +24,7 @@ bool KhruevAMinElemVecMPI::PreProcessingImpl() {
   return true;
 }
 
-bool KhruevAMinElemVecMPI::RunImpl() {
+bool KhruevAMinElemVecMPI::RunImpl() {  //
   int mininmum = GetInput()[0];
   size_t vec_size = GetInput().size();
   for (size_t i = 1; i < vec_size; i++) {
