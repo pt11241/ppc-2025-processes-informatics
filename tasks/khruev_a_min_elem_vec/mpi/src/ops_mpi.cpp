@@ -25,56 +25,35 @@ bool KhruevAMinElemVecMPI::PreProcessingImpl() {
 }
 
 bool KhruevAMinElemVecMPI::RunImpl() {
-  // int mininmum = GetInput()[0];
-  // size_t vec_size = GetInput().size();
-  // for (size_t i = 1; i < vec_size; i++) {
-  //   if (GetInput()[i] < mininmum) {
-  //     mininmum = GetInput()[i];
-  //   }
-  // }
-  // GetOutput() = mininmum;
-
   int rank, size;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-  size_t vec_size = GetInput().size();
-  int base_size = vec_size / size;
-  int remainder = vec_size % size;
-  int local_size = base_size + (rank < remainder ? 1 : 0);
-
-  std::vector<int> local_vec(local_size);
-
+  int global_size = GetInput().size();
+  
   std::vector<int> sendcounts(size), displacements(size);
-  if (rank == 0) {
-    int displacement = 0;
-    for (int i = 0; i < size; i++) {
-      sendcounts[i] = base_size + (i < remainder ? 1 : 0);
-      displacements[i] = displacement;
-      displacement += sendcounts[i];
-    }
+  int displacement = 0;
+  for (int i = 0; i < size; i++) {
+    sendcounts[i] = global_size / size + (i < global_size % size ? 1 : 0);
+    displacements[i] = displacement;
+    displacement += sendcounts[i];
   }
 
-  MPI_Bcast(sendcounts.data(), size, MPI_INT, 0, MPI_COMM_WORLD);
-  MPI_Bcast(displacements.data(), size, MPI_INT, 0, MPI_COMM_WORLD);
+  int local_size = sendcounts[rank];
+  std::vector<int> local_vec(local_size);
 
-  MPI_Scatterv(GetInput().data(), sendcounts.data(), displacements.data(), MPI_INT, local_vec.data(), local_size,
-               MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Scatterv(GetInput().data(), sendcounts.data(), displacements.data(), MPI_INT,
+               local_vec.data(), local_size, MPI_INT, 0, MPI_COMM_WORLD);
 
   int local_min = std::numeric_limits<int>::max();
-  for (int value : local_vec) {
-    if (value < local_min) {
-      local_min = value;
-    }
+  if (!local_vec.empty()) {
+    local_min = *std::min_element(local_vec.begin(), local_vec.end());
   }
 
   int global_min;
-  MPI_Reduce(&local_min, &global_min, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
+  MPI_Allreduce(&local_min, &global_min, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
 
-  if (rank == 0) {
-    GetOutput() = global_min;
-  }
-
+  GetOutput() = global_min;
   return true;
 }
 
