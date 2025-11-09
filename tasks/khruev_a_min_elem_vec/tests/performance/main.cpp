@@ -9,7 +9,7 @@ namespace khruev_a_min_elem_vec {
 
 class KhruevAMinElemVecPerfTests : public ppc::util::BaseRunPerfTests<InType, OutType> {
   const int kCount_ = 1000000;
-  InType input_data_{};
+  InType input_data_;
   OutType expected_;
 
   void SetUp() override {
