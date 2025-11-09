@@ -42,7 +42,7 @@ bool KhruevAMinElemVecMPI::RunImpl() {
       }
     }
     GetOutput() = global_min;
-    return 0;
+    return true;
   }
 
   if (rank == 0) {
