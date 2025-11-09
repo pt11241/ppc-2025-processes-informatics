@@ -57,7 +57,7 @@ bool KhruevAMinElemVecMPI::RunImpl() {
         global_min = min;
       }
     }
-    MPI_Bcast(&global_min, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
   } else {
     MPI_Recv(a.data(), 2, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     int start = a[0], end = a[1];
@@ -69,10 +69,9 @@ bool KhruevAMinElemVecMPI::RunImpl() {
     }
 
     MPI_Send(&min, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-
-    MPI_Bcast(&global_min, 1, MPI_INT, 0, MPI_COMM_WORLD);  // !!!!!!!
   }
-  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Bcast(&global_min, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
   GetOutput() = global_min;
   return true;
 }
