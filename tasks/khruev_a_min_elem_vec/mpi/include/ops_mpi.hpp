@@ -18,7 +18,7 @@ class KhruevAMinElemVecMPI : public BaseTask {
   bool RunImpl() override;
   bool PostProcessingImpl() override;
 
-  void SendingToProcceses(int size, int vector_size, std::vector<int> &a);
+  void SendingToProcceses(int size, int vector_size);
 };
 
 }  // namespace khruev_a_min_elem_vec

@@ -30,10 +30,9 @@ bool KhruevAMinElemVecMPI::RunImpl() {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   int min = 0;
-
+  int global_min = 0;
   int vector_size = GetInput().size();
   std::vector<int> a(2);
-  int global_min = 0;
   if (size == 1) {
     global_min = GetInput()[0];
     for (int i = 0; i < vector_size; i++) {
@@ -46,29 +45,35 @@ bool KhruevAMinElemVecMPI::RunImpl() {
   }
 
   if (rank == 0) {
-    SendingToProcceses(size, vector_size, a);  // отправка индексов процессам от 1 до n
-
-    for (int i = 1; i <= size - 1; i++) {
-      MPI_Recv(&min, 1, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-      if (i == 1) {
-        global_min = min;
-      }
-      if (global_min > min) {
-        global_min = min;
+    SendingToProcceses(size, vector_size);  // отправка индексов процессам от 1 до n
+    // int global_min = 0;
+    bool have_global = false;
+    for (int i = 1; i <= size - 1; ++i) {
+      int local_min;
+      MPI_Recv(&local_min, 1, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      if (!have_global) {
+        global_min = local_min;
+        have_global = true;
+      } else {
+        global_min = std::min(global_min, local_min);
       }
     }
-
   } else {
-    MPI_Recv(a.data(), 2, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    int start = a[0], end = a[1];
-    min = GetInput()[start];
-    for (int i = start; i <= end; i++) {
-      if (GetInput()[i] < min) {
-        min = GetInput()[i];
+    std::array<int, 2> range;
+    MPI_Recv(range.data(), 2, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    int start = range[0], end = range[1];
+    if (start > end) {
+      min = INT_MAX;
+      MPI_Send(&min, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+    } else {
+      min = GetInput()[start];
+      for (int i = start; i <= end; i++) {
+        if (GetInput()[i] < min) {
+          min = GetInput()[i];
+        }
       }
+      MPI_Send(&min, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
     }
-
-    MPI_Send(&min, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
   }
   MPI_Bcast(&global_min, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
@@ -80,23 +85,23 @@ bool KhruevAMinElemVecMPI::PostProcessingImpl() {
   return true;
 }
 
-void KhruevAMinElemVecMPI::SendingToProcceses(int size, int vector_size, std::vector<int> &a) {
-  int elem_num = vector_size / (size - 1);
-  int remainder = vector_size % (size - 1);
-  int flag = elem_num;
-  for (int i = 1; i <= size - 1; i++) {
-    if (flag == 0) {
-      elem_num++;
-      flag = 1;
-    }
-    if (i == (size - 1) && remainder != 0) {
-      a[0] = (i - 1) * elem_num;
-      a[1] = vector_size - 1;
-    } else {
-      a[0] = (i - 1) * elem_num;
-      a[1] = i * elem_num - 1;
-    }
-    MPI_Send(a.data(), 2, MPI_INT, i, 0, MPI_COMM_WORLD);
+void KhruevAMinElemVecMPI::SendingToProcceses(int size, int vector_size) {
+  int workers = size - 1;
+  if (workers <= 0) {
+    return;  // нет рабочих
+  }
+
+  int base = vector_size / workers;
+  int rem = vector_size % workers;
+  int offset = 0;
+
+  for (int i = 1; i <= workers; ++i) {
+    int chunk = base + (i <= rem ? 1 : 0);
+    int start = offset;
+    int end = (chunk > 0) ? (offset + chunk - 1) : (offset - 1);  // если chunk==0 -> end < start
+    std::array<int, 2> range{start, end};
+    MPI_Send(range.data(), 2, MPI_INT, i, 0, MPI_COMM_WORLD);
+    offset += chunk;
   }
 }
 
