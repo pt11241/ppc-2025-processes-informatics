@@ -81,8 +81,6 @@ bool KhruevAMinElemVecMPI::RunImpl() {
   return true;
 }
 
-
-
 bool KhruevAMinElemVecMPI::PostProcessingImpl() {
   return true;
 }
