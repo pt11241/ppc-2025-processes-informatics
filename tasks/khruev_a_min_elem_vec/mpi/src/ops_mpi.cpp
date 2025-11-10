@@ -32,7 +32,7 @@ bool KhruevAMinElemVecMPI::RunImpl() {
   int min = 0;
   int global_min = 0;
   int vector_size = GetInput().size();
-  std::vector<int> a(2);
+  // std::vector<int> a(2);
   if (size == 1) {
     global_min = GetInput()[0];
     for (int i = 0; i < vector_size; i++) {
