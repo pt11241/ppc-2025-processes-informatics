@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <cstddef>
+
 #include "khruev_a_min_elem_vec/common/include/common.hpp"
 #include "khruev_a_min_elem_vec/mpi/include/ops_mpi.hpp"
 #include "khruev_a_min_elem_vec/seq/include/ops_seq.hpp"
@@ -10,18 +12,18 @@ namespace khruev_a_min_elem_vec {
 class KhruevAMinElemVecPerfTests : public ppc::util::BaseRunPerfTests<InType, OutType> {
   const int kCount_ = 10000000;
   InType input_data_;
-  OutType expected_;
+  // OutType expected_;
 
   void SetUp() override {
     size_t size = kCount_;
     for (size_t i = 1; i <= size; i++) {
-      input_data_.push_back(i);
+      input_data_.push_back(static_cast<int>(i));
     }
-    expected_ = 1;
+    // expected_ = 1;
   }
 
   bool CheckTestOutputData(OutType &output_data) final {
-    return expected_ == output_data;
+    return 1 == output_data;
   }
 
   InType GetTestInputData() final {

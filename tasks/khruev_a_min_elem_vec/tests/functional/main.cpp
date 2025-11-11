@@ -1,15 +1,11 @@
 #include <gtest/gtest.h>
 #include <stb/stb_image.h>
 
-#include <algorithm>
 #include <array>
 #include <cstddef>
-#include <cstdint>
-#include <numeric>
-#include <stdexcept>
+#include <iostream>
 #include <string>
 #include <tuple>
-#include <utility>
 #include <vector>
 
 #include "khruev_a_min_elem_vec/common/include/common.hpp"
@@ -41,15 +37,16 @@ class KhruevAMinElemVecFuncTests : public ppc::util::BaseRunFuncTests<InType, Ou
       std::cout << x << ' ';
     }
     std::cout << '\n';
-    expected_ = std::get<1>(std::get<0>(params));
-    std::cout << "We set expected result:  " << expected_ << '\n';
+    // expected_ = std::get<1>(std::get<0>(params));
+    std::cout << "We set expected result:  " << std::get<1>(std::get<0>(params)) << '\n';
   }
 
   bool CheckTestOutputData(OutType &output_data) final {
     std::cout << "CheckTestOutputData for "
               << std::get<1>(std::get<static_cast<std::size_t>(ppc::util::GTestParamIndex::kTestParams)>(GetParam()))
               << '\n';
-    return (expected_ == output_data);
+    return (std::get<1>(std::get<0>(std::get<static_cast<std::size_t>(ppc::util::GTestParamIndex::kTestParams)>(
+                GetParam()))) == output_data);
   }
 
   InType GetTestInputData() final {
@@ -58,7 +55,7 @@ class KhruevAMinElemVecFuncTests : public ppc::util::BaseRunFuncTests<InType, Ou
 
  private:
   InType input_data_;
-  OutType expected_;
+  // OutType expected_;
 };
 
 namespace {

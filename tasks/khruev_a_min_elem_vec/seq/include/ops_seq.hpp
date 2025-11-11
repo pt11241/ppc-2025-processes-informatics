@@ -15,7 +15,7 @@ class KhruevAMinElemVecSEQ : public BaseTask {
   explicit KhruevAMinElemVecSEQ(const InType &in);
 
  private:
-  std::vector<int> _data;
+  std::vector<int> data_;
   bool ValidationImpl() override;
   bool PreProcessingImpl() override;
   bool RunImpl() override;

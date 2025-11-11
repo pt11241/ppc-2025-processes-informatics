@@ -1,11 +1,9 @@
 #include "khruev_a_min_elem_vec/seq/include/ops_seq.hpp"
 
 #include <cstddef>
-#include <numeric>
 #include <vector>
 
 #include "khruev_a_min_elem_vec/common/include/common.hpp"
-#include "util/include/util.hpp"
 
 namespace khruev_a_min_elem_vec {
 
