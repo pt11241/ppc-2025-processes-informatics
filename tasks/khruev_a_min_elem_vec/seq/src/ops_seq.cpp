@@ -25,9 +25,7 @@ bool KhruevAMinElemVecSEQ::RunImpl() {
   int mininmum = GetInput()[0];
   size_t vec_size = GetInput().size();
   for (size_t i = 1; i < vec_size; i++) {
-    if (GetInput()[i] < mininmum) {
-      mininmum = GetInput()[i];
-    }
+    mininmum = std::min(GetInput()[i], mininmum);
   }
   GetOutput() = mininmum;
 

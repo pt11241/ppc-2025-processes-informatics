@@ -103,9 +103,7 @@ void KhruevAMinElemVecMPI::ReceivingAndReturn(std::vector<int> &vec) {
   } else {
     min = vec[start];
     for (int i = start; i <= end; i++) {
-      if (vec[i] < min) {
-        min = vec[i];
-      }
+      min = std::min(vec[i], min);
     }
     MPI_Send(&min, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
   }
