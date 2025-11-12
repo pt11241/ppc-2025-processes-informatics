@@ -2,6 +2,7 @@
 #include <stb/stb_image.h>
 
 #include <array>
+#include <climits>
 #include <cstddef>
 #include <iostream>
 #include <string>
@@ -70,14 +71,20 @@ std::vector<int> instanse4{1, 2, 3, 4, 5, 6, 9, 1, 1, 0};
 std::vector<int> instanse5{1, 2, 3, 4};
 std::vector<int> instanse6{2, 5, 2, 0, -10};
 std::vector<int> instanse7{1, 2};
+std::vector<int> instanse8{-1, -2, -8, -10, -11};
+std::vector<int> instanse9{1, 1, 1, 1, 1};
+std::vector<int> instanse10{};
 
-const std::array<TestType, 7> kTestParam = {std::make_tuple(std::make_tuple(instanse1, 1), "test1"),
-                                            std::make_tuple(std::make_tuple(instanse2, -13), "test2"),
-                                            std::make_tuple(std::make_tuple(instanse3, -100), "test3"),
-                                            std::make_tuple(std::make_tuple(instanse4, 0), "test4"),
-                                            std::make_tuple(std::make_tuple(instanse5, 1), "test5"),
-                                            std::make_tuple(std::make_tuple(instanse6, -10), "test6"),
-                                            std::make_tuple(std::make_tuple(instanse7, 1), "test7")};
+const std::array<TestType, 10> kTestParam = {std::make_tuple(std::make_tuple(instanse1, 1), "test1"),
+                                             std::make_tuple(std::make_tuple(instanse2, -13), "test2"),
+                                             std::make_tuple(std::make_tuple(instanse3, -100), "test3"),
+                                             std::make_tuple(std::make_tuple(instanse4, 0), "test4"),
+                                             std::make_tuple(std::make_tuple(instanse5, 1), "test5"),
+                                             std::make_tuple(std::make_tuple(instanse6, -10), "test6"),
+                                             std::make_tuple(std::make_tuple(instanse7, 1), "test7"),
+                                             std::make_tuple(std::make_tuple(instanse8, -11), "test8"),
+                                             std::make_tuple(std::make_tuple(instanse9, 1), "test9"),
+                                             std::make_tuple(std::make_tuple(instanse10, INT_MAX), "test10")};
 
 const auto kTestTasksList = std::tuple_cat(
     ppc::util::AddFuncTask<KhruevAMinElemVecMPI, InType>(kTestParam, PPC_SETTINGS_khruev_a_min_elem_vec),

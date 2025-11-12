@@ -19,7 +19,7 @@ KhruevAMinElemVecMPI::KhruevAMinElemVecMPI(const InType &in) {
 }
 
 bool KhruevAMinElemVecMPI::ValidationImpl() {  // input check
-  return !GetInput().empty();
+  return GetOutput() == 0;
 }
 
 bool KhruevAMinElemVecMPI::PreProcessingImpl() {
@@ -27,6 +27,10 @@ bool KhruevAMinElemVecMPI::PreProcessingImpl() {
 }
 
 bool KhruevAMinElemVecMPI::RunImpl() {
+  if (GetInput().empty()) {
+    GetOutput() = INT_MAX;
+    return true;
+  }
   int rank = 0;
   int size = 0;
   // int local_size;

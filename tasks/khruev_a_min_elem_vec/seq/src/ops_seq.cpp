@@ -1,6 +1,7 @@
 #include "khruev_a_min_elem_vec/seq/include/ops_seq.hpp"
 
 #include <algorithm>
+#include <climits>
 #include <cstddef>
 #include <vector>
 
@@ -15,7 +16,7 @@ KhruevAMinElemVecSEQ::KhruevAMinElemVecSEQ(const InType &in) {
 }
 
 bool KhruevAMinElemVecSEQ::ValidationImpl() {
-  return (!GetInput().empty());
+  return (GetOutput() == 0);
 }
 
 bool KhruevAMinElemVecSEQ::PreProcessingImpl() {
@@ -23,6 +24,10 @@ bool KhruevAMinElemVecSEQ::PreProcessingImpl() {
 }
 
 bool KhruevAMinElemVecSEQ::RunImpl() {
+  if (GetInput().empty()) {
+    GetOutput() = INT_MAX;
+    return true;
+  }
   int mininmum = GetInput()[0];
   size_t vec_size = GetInput().size();
   for (size_t i = 1; i < vec_size; i++) {
