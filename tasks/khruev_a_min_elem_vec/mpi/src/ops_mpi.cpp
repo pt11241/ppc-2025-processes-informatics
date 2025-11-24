@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <climits>
 #include <cstddef>
-#include <utility>
 #include <vector>
 
 #include "khruev_a_min_elem_vec/common/include/common.hpp"
@@ -33,15 +32,18 @@ bool KhruevAMinElemVecMPI::RunImpl() {
     return true;
   }
 
-  int rank, size;
+  int rank = 0;
+  int size = 0;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-  int n = static_cast<int>(input.size());
+  int n = input.size();
   int int_part = n / size;
   int remainder = n % size;
 
-  std::vector<int> sendcounts(size), displs(size);
+  std::vector<int> sendcounts(size);
+  std::vector<int> displs(size);
+
   for (int i = 0; i < size; ++i) {
     sendcounts[i] = int_part + (i < remainder ? 1 : 0);
     displs[i] = (i == 0 ? 0 : displs[i - 1] + sendcounts[i - 1]);
@@ -56,7 +58,7 @@ bool KhruevAMinElemVecMPI::RunImpl() {
     local_min = *std::min_element(local_chunk.begin(), local_chunk.begin() + sendcounts[rank]);
   }
 
-  int global_min;
+  int global_min = 0;
 
   MPI_Reduce(&local_min, &global_min, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
   MPI_Bcast(&global_min, 1, MPI_INT, 0, MPI_COMM_WORLD);
