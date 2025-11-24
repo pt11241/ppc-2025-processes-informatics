@@ -4,7 +4,6 @@
 
 #include <algorithm>
 #include <climits>
-#include <cstddef>
 #include <vector>
 
 #include "khruev_a_min_elem_vec/common/include/common.hpp"
@@ -37,7 +36,7 @@ bool KhruevAMinElemVecMPI::RunImpl() {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-  int n = input.size();
+  int n = static_cast<int>(input.size());
   int int_part = n / size;
   int remainder = n % size;
 
