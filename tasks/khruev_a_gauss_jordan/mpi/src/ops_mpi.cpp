@@ -137,7 +137,8 @@ void KhruevAGaussJordanMPI::BroadcastSizes(int &rows, int &cols) {
 }
 
 void KhruevAGaussJordanMPI::BroadcastMatrix(std::vector<std::vector<double>> &mat, int rows, int cols) {
-  std::vector<double> buf(rows * cols);
+  std::vector<double> buf(static_cast<size_t>(rows) * static_cast<size_t>(cols));
+
 
   int rank = 0;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);

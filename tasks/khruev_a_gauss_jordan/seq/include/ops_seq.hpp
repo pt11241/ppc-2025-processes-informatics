@@ -3,6 +3,8 @@
 #include "khruev_a_gauss_jordan/common/include/common.hpp"
 #include "task/include/task.hpp"
 
+#include <vector>
+
 namespace khruev_a_gauss_jordan {
 
 class KhruevAGaussJordanSEQ : public BaseTask {
@@ -20,9 +22,9 @@ class KhruevAGaussJordanSEQ : public BaseTask {
   bool PostProcessingImpl() override;
 
   void ToReducedForm(std::vector<std::vector<double>> &a);
-  bool DetectInconsistency(const std::vector<std::vector<double>> &a) const;
-  int ComputeRank(const std::vector<std::vector<double>> &a) const;
-  std::vector<double> RecoverSolution(const std::vector<std::vector<double>> &a) const;
+  [[nodiscard]] bool DetectInconsistency(const std::vector<std::vector<double>> &a) const;
+  [[nodiscard]] int ComputeRank(const std::vector<std::vector<double>> &a) const;
+  [[nodiscard]] std::vector<double> RecoverSolution(const std::vector<std::vector<double>> &a) const;
 };
 
 }  // namespace khruev_a_gauss_jordan
