@@ -16,7 +16,7 @@ bool IsNearlyZero(double v) {
   return std::fabs(v) < kEps;
 }
 
-int ChoosePivot(const std::vector<std::vector<double>>& a, int col, int from, int n) {
+int ChoosePivot(const std::vector<std::vector<double>> &a, int col, int from, int n) {
   int best = -1;
   double max_val = 0.0;
 
@@ -30,23 +30,23 @@ int ChoosePivot(const std::vector<std::vector<double>>& a, int col, int from, in
   return (max_val > kEps) ? best : -1;
 }
 
-void NormalizeRow(std::vector<double>& row, int pivot_col) {
+void NormalizeRow(std::vector<double> &row, int pivot_col) {
   double div = row[pivot_col];
   if (IsNearlyZero(div)) {
     return;
   }
-  for (double& x : row) {
+  for (double &x : row) {
     x /= div;
   }
 }
 
-void SubtractRows(std::vector<double>& target, const std::vector<double>& pivot, double factor) {
+void SubtractRows(std::vector<double> &target, const std::vector<double> &pivot, double factor) {
   for (size_t j = 0; j < target.size(); ++j) {
     target[j] -= factor * pivot[j];
   }
 }
 
-void SolveGaussJordanSequential(std::vector<std::vector<double>>& a) {
+void SolveGaussJordanSequential(std::vector<std::vector<double>> &a) {
   int n = static_cast<int>(a.size());
   int m = static_cast<int>(a[0].size());
   int row = 0;
@@ -77,7 +77,7 @@ void SolveGaussJordanSequential(std::vector<std::vector<double>>& a) {
   }
 }
 
-std::vector<double> ExtractSolution(const std::vector<std::vector<double>>& a) {
+std::vector<double> ExtractSolution(const std::vector<std::vector<double>> &a) {
   int n = static_cast<int>(a.size());
   int m = static_cast<int>(a[0].size());
 
@@ -103,7 +103,7 @@ std::vector<double> ExtractSolution(const std::vector<std::vector<double>>& a) {
 
 }  // namespace
 
-KhruevAGaussJordanMPI::KhruevAGaussJordanMPI(const InType& in) {
+KhruevAGaussJordanMPI::KhruevAGaussJordanMPI(const InType &in) {
   SetTypeOfTask(GetStaticTypeOfTask());
   khruev_a_gauss_jordan::InType tmp(in);
   GetInput().swap(tmp);
@@ -119,7 +119,7 @@ bool KhruevAGaussJordanMPI::ValidationImpl() {
       ok = 1;
     } else {
       size_t cols = GetInput()[0].size();
-      for (const auto& r : GetInput()) {
+      for (const auto &r : GetInput()) {
         if (r.size() != cols) {
           ok = 0;
         }
@@ -131,12 +131,12 @@ bool KhruevAGaussJordanMPI::ValidationImpl() {
   return ok == 1;
 }
 
-void KhruevAGaussJordanMPI::BroadcastSizes(int& rows, int& cols) {
+void KhruevAGaussJordanMPI::BroadcastSizes(int &rows, int &cols) {
   MPI_Bcast(&rows, 1, MPI_INT, 0, MPI_COMM_WORLD);
   MPI_Bcast(&cols, 1, MPI_INT, 0, MPI_COMM_WORLD);
 }
 
-void KhruevAGaussJordanMPI::BroadcastMatrix(std::vector<std::vector<double>>& mat, int rows, int cols) {
+void KhruevAGaussJordanMPI::BroadcastMatrix(std::vector<std::vector<double>> &mat, int rows, int cols) {
   std::vector<double> buf(rows * cols);
 
   int rank = 0;

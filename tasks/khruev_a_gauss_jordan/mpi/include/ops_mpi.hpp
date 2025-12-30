@@ -10,7 +10,7 @@ class KhruevAGaussJordanMPI : public BaseTask {
     return ppc::task::TypeOfTask::kMPI;
   }
 
-  explicit KhruevAGaussJordanMPI(const InType& in);
+  explicit KhruevAGaussJordanMPI(const InType &in);
 
  private:
   bool ValidationImpl() override;
@@ -18,8 +18,8 @@ class KhruevAGaussJordanMPI : public BaseTask {
   bool RunImpl() override;
   bool PostProcessingImpl() override;
 
-  static void BroadcastSizes(int& rows, int& cols);
-  static void BroadcastMatrix(std::vector<std::vector<double>>& mat, int rows, int cols);
+  static void BroadcastSizes(int &rows, int &cols);
+  static void BroadcastMatrix(std::vector<std::vector<double>> &mat, int rows, int cols);
 };
 
 }  // namespace khruev_a_gauss_jordan

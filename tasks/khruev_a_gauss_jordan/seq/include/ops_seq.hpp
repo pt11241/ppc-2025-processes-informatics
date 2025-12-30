@@ -11,7 +11,7 @@ class KhruevAGaussJordanSEQ : public BaseTask {
     return ppc::task::TypeOfTask::kSEQ;
   }
 
-  explicit KhruevAGaussJordanSEQ(const InType& in);
+  explicit KhruevAGaussJordanSEQ(const InType &in);
 
  private:
   bool ValidationImpl() override;
@@ -19,10 +19,10 @@ class KhruevAGaussJordanSEQ : public BaseTask {
   bool RunImpl() override;
   bool PostProcessingImpl() override;
 
-  void ToReducedForm(std::vector<std::vector<double>>& a);
-  bool DetectInconsistency(const std::vector<std::vector<double>>& a) const;
-  int ComputeRank(const std::vector<std::vector<double>>& a) const;
-  std::vector<double> RecoverSolution(const std::vector<std::vector<double>>& a) const;
+  void ToReducedForm(std::vector<std::vector<double>> &a);
+  bool DetectInconsistency(const std::vector<std::vector<double>> &a) const;
+  int ComputeRank(const std::vector<std::vector<double>> &a) const;
+  std::vector<double> RecoverSolution(const std::vector<std::vector<double>> &a) const;
 };
 
 }  // namespace khruev_a_gauss_jordan

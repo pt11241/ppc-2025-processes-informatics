@@ -15,7 +15,7 @@ bool NearZero(double x) {
   return std::fabs(x) < kTol;
 }
 
-int SelectPivot(const std::vector<std::vector<double>>& a, int start_row, int col) {
+int SelectPivot(const std::vector<std::vector<double>> &a, int start_row, int col) {
   int best = -1;
   double max_val = 0.0;
 
@@ -29,23 +29,23 @@ int SelectPivot(const std::vector<std::vector<double>>& a, int start_row, int co
   return (max_val > kTol) ? best : -1;
 }
 
-void Normalize(std::vector<double>& row, int pivot_col) {
+void Normalize(std::vector<double> &row, int pivot_col) {
   double p = row[pivot_col];
   if (NearZero(p)) {
     return;
   }
-  for (double& x : row) {
+  for (double &x : row) {
     x /= p;
   }
 }
 
-void Eliminate(std::vector<double>& row, const std::vector<double>& pivot, double factor) {
+void Eliminate(std::vector<double> &row, const std::vector<double> &pivot, double factor) {
   for (size_t j = 0; j < row.size(); ++j) {
     row[j] -= factor * pivot[j];
   }
 }
 
-bool RowIsZero(const std::vector<double>& row, int until) {
+bool RowIsZero(const std::vector<double> &row, int until) {
   for (int j = 0; j < until; ++j) {
     if (!NearZero(row[j])) {
       return false;
@@ -56,7 +56,7 @@ bool RowIsZero(const std::vector<double>& row, int until) {
 
 }  // namespace
 
-KhruevAGaussJordanSEQ::KhruevAGaussJordanSEQ(const InType& in) {
+KhruevAGaussJordanSEQ::KhruevAGaussJordanSEQ(const InType &in) {
   SetTypeOfTask(GetStaticTypeOfTask());
   InType tmp(in);
   GetInput().swap(tmp);
@@ -68,7 +68,7 @@ bool KhruevAGaussJordanSEQ::ValidationImpl() {
   }
 
   size_t cols = GetInput()[0].size();
-  for (const auto& r : GetInput()) {
+  for (const auto &r : GetInput()) {
     if (r.size() != cols) {
       return false;
     }
@@ -82,7 +82,7 @@ bool KhruevAGaussJordanSEQ::PreProcessingImpl() {
   return true;
 }
 
-void KhruevAGaussJordanSEQ::ToReducedForm(std::vector<std::vector<double>>& a) {
+void KhruevAGaussJordanSEQ::ToReducedForm(std::vector<std::vector<double>> &a) {
   int n = static_cast<int>(a.size());
   int m = static_cast<int>(a[0].size());
 
@@ -110,9 +110,9 @@ void KhruevAGaussJordanSEQ::ToReducedForm(std::vector<std::vector<double>>& a) {
   }
 }
 
-bool KhruevAGaussJordanSEQ::DetectInconsistency(const std::vector<std::vector<double>>& a) const {
+bool KhruevAGaussJordanSEQ::DetectInconsistency(const std::vector<std::vector<double>> &a) const {
   int m = static_cast<int>(a[0].size());
-  for (const auto& row : a) {
+  for (const auto &row : a) {
     if (RowIsZero(row, m - 1) && !NearZero(row[m - 1])) {
       return true;
     }
@@ -120,10 +120,10 @@ bool KhruevAGaussJordanSEQ::DetectInconsistency(const std::vector<std::vector<do
   return false;
 }
 
-int KhruevAGaussJordanSEQ::ComputeRank(const std::vector<std::vector<double>>& a) const {
+int KhruevAGaussJordanSEQ::ComputeRank(const std::vector<std::vector<double>> &a) const {
   int rank = 0;
   int m = static_cast<int>(a[0].size());
-  for (const auto& row : a) {
+  for (const auto &row : a) {
     if (!RowIsZero(row, m - 1)) {
       ++rank;
     }
@@ -131,7 +131,7 @@ int KhruevAGaussJordanSEQ::ComputeRank(const std::vector<std::vector<double>>& a
   return rank;
 }
 
-std::vector<double> KhruevAGaussJordanSEQ::RecoverSolution(const std::vector<std::vector<double>>& a) const {
+std::vector<double> KhruevAGaussJordanSEQ::RecoverSolution(const std::vector<std::vector<double>> &a) const {
   int n = static_cast<int>(a.size());
   int m = static_cast<int>(a[0].size());
 

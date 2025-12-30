@@ -31,7 +31,7 @@ class KhruevGaussJordanPerfBase : public ppc::util::BaseRunPerfTests<InType, Out
     }
   }
 
-  bool CheckTestOutputData(OutType& output) final {
+  bool CheckTestOutputData(OutType &output) final {
     return !output.empty();
   }
 
