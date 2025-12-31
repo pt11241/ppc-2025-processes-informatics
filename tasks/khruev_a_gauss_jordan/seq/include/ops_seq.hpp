@@ -21,10 +21,10 @@ class KhruevAGaussJordanSEQ : public BaseTask {
   bool RunImpl() override;
   bool PostProcessingImpl() override;
 
-  void ToReducedForm(std::vector<std::vector<double>> &a);
-  [[nodiscard]] bool DetectInconsistency(const std::vector<std::vector<double>> &a) const;
-  [[nodiscard]] int ComputeRank(const std::vector<std::vector<double>> &a) const;
-  [[nodiscard]] std::vector<double> RecoverSolution(const std::vector<std::vector<double>> &a) const;
+  static void ToReducedForm(std::vector<std::vector<double>> &a);
+  static bool DetectInconsistency(const std::vector<std::vector<double>> &a);
+  static int ComputeRank(const std::vector<std::vector<double>> &a);
+  static std::vector<double> RecoverSolution(const std::vector<std::vector<double>> &a);
 };
 
 }  // namespace khruev_a_gauss_jordan

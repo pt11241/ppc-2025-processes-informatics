@@ -1,10 +1,13 @@
 #include "khruev_a_gauss_jordan/mpi/include/ops_mpi.hpp"
+#include "khruev_a_gauss_jordan/common/include/common.hpp"
 
 #include <mpi.h>
 
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <vector>
+
 
 namespace khruev_a_gauss_jordan {
 
