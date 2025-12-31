@@ -114,13 +114,10 @@ void KhruevAGaussJordanSEQ::ToReducedForm(std::vector<std::vector<double>> &a) {
 }
 
 bool KhruevAGaussJordanSEQ::DetectInconsistency(const std::vector<std::vector<double>> &a) {
-  int m = static_cast<int>(a[0].size());
-  for (const auto &row : a) {
-    if (RowIsZero(row, m - 1) && !NearZero(row[m - 1])) {
-      return true;
-    }
-  }
-  return false;
+  const int m = static_cast<int>(a[0].size());
+
+  return std::ranges::any_of(
+      a, [m](const std::vector<double> &row) { return RowIsZero(row, m - 1) && !NearZero(row[m - 1]); });
 }
 
 int KhruevAGaussJordanSEQ::ComputeRank(const std::vector<std::vector<double>> &a) {

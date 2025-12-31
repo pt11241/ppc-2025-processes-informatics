@@ -5,7 +5,6 @@
 #include <cstddef>
 #include <string>
 #include <tuple>
-#include <vector>
 
 #include "khruev_a_gauss_jordan/common/include/common.hpp"
 #include "khruev_a_gauss_jordan/mpi/include/ops_mpi.hpp"
