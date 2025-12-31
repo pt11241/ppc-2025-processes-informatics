@@ -1,5 +1,4 @@
 #include "khruev_a_gauss_jordan/mpi/include/ops_mpi.hpp"
-#include "khruev_a_gauss_jordan/common/include/common.hpp"
 
 #include <mpi.h>
 
@@ -8,6 +7,7 @@
 #include <cstddef>
 #include <vector>
 
+#include "khruev_a_gauss_jordan/common/include/common.hpp"
 
 namespace khruev_a_gauss_jordan {
 
