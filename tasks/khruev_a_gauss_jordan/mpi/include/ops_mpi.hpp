@@ -15,13 +15,22 @@ class KhruevAGaussJordanMPI : public BaseTask {
   explicit KhruevAGaussJordanMPI(const InType &in);
 
  private:
+  std::vector<double> local_data_;
+  int n_, m_;
+  struct PivotPos {
+    double val;
+    int rank;
+  };
+  int GetGlobalIdx(int local_k, int rank, int size) const;
+  PivotPos FindPivot(int col, int rank, int size);
+  void SwapRows(int i, int pivot_rank, int rank, int size);
+  void Eliminate(int i, int rank, int size);
+  static constexpr double kEps = 1e-10;
+
   bool ValidationImpl() override;
   bool PreProcessingImpl() override;
   bool RunImpl() override;
   bool PostProcessingImpl() override;
-
-  static void BroadcastSizes(int &rows, int &cols);
-  static void BroadcastMatrix(std::vector<std::vector<double>> &mat, int rows, int cols);
 };
 
 }  // namespace khruev_a_gauss_jordan
