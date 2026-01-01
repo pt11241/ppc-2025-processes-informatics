@@ -185,7 +185,8 @@ bool KhruevAGaussJordanMPI::ValidationImpl() {
 }
 
 bool KhruevAGaussJordanMPI::PreProcessingImpl() {
-  int rank = 0, size = 0;
+  int rank = 0;
+  int size = 0;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
@@ -202,7 +203,8 @@ bool KhruevAGaussJordanMPI::PreProcessingImpl() {
 
   local_data_.assign(static_cast<size_t>(my_rows) * m_, 0.0);
 
-  std::vector<int> sendcounts(size), displs(size);
+  std::vector<int> sendcounts(size);
+  std::vector<int> displs(size);
   int offset = 0;
   for (int i = 0; i < size; ++i) {
     sendcounts[i] = ((i < rem) ? (rows + 1) : rows) * m_;
@@ -224,7 +226,8 @@ bool KhruevAGaussJordanMPI::PreProcessingImpl() {
 }
 
 bool KhruevAGaussJordanMPI::RunImpl() {
-  int rank = 0, size = 0;
+  int rank = 0;
+  int size = 0;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
@@ -240,7 +243,8 @@ bool KhruevAGaussJordanMPI::RunImpl() {
 }
 
 bool KhruevAGaussJordanMPI::PostProcessingImpl() {
-  int rank = 0, size = 0;
+  int rank = 0;
+  int size = 0;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
@@ -253,7 +257,8 @@ bool KhruevAGaussJordanMPI::PostProcessingImpl() {
     full.resize(static_cast<size_t>(n_) * m_);
   }
 
-  std::vector<int> recvcounts(size), displs(size);
+  std::vector<int> recvcounts(size);
+  std::vector<int> displs(size);
   int offset = 0;
   for (int i = 0; i < size; ++i) {
     recvcounts[i] = ((i < rem) ? (rows + 1) : rows) * m_;
