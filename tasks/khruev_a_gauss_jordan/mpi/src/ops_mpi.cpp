@@ -11,8 +11,6 @@
 
 namespace khruev_a_gauss_jordan {
 
-// ==================== helpers ====================
-
 int KhruevAGaussJordanMPI::GetGlobalIdx(int local_k, int rank, int size) const {
   int rows = n_ / size;
   int rem = n_ % size;
@@ -131,8 +129,6 @@ void KhruevAGaussJordanMPI::ApplyElimination(int i, const std::vector<double> &p
   }
 }
 
-// ==================== compact algorithms ====================
-
 void KhruevAGaussJordanMPI::SwapRows(int i, int pivot_rank, int rank, int size) {
   RowPos target = GetRowOwner(i, size);
 
@@ -160,8 +156,6 @@ void KhruevAGaussJordanMPI::Eliminate(int i, int rank, int size) {
   MPI_Bcast(pivot_row.data(), m_, MPI_DOUBLE, pivot.rank, MPI_COMM_WORLD);
   ApplyElimination(i, pivot_row, rank, size);
 }
-
-// ==================== BaseTask ====================
 
 KhruevAGaussJordanMPI::KhruevAGaussJordanMPI(const InType &in) {
   SetTypeOfTask(GetStaticTypeOfTask());
