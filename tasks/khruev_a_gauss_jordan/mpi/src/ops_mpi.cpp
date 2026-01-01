@@ -19,6 +19,38 @@ int KhruevAGaussJordanMPI::GetGlobalIdx(int local_k, int rank, int size) const {
   return (remainder * (rows_per_proc + 1)) + ((rank - remainder) * rows_per_proc) + local_k;
 }
 
+KhruevAGaussJordanMPI::RowPos KhruevAGaussJordanMPI::GetRowOwner(int global_i, int size) const {
+  int rows = n_ / size;
+  int rem = n_ % size;
+
+  if (global_i < rem * (rows + 1)) {
+    return {global_i / (rows + 1), global_i % (rows + 1)};
+  }
+
+  int base = rem * (rows + 1);
+  return {rem + (global_i - base) / rows, (global_i - base) % rows};
+}
+
+int KhruevAGaussJordanMPI::FindLocalPivotIdx(int col, int rank, int size) const {
+  int rows = n_ / size;
+  int rem = n_ % size;
+  int my_rows = (rank < rem) ? rows + 1 : rows;
+
+  int best = -1;
+  double best_val = -1.0;
+
+  for (int k = 0; k < my_rows; ++k) {
+    if (GetGlobalIdx(k, rank, size) >= col) {
+      double v = std::fabs(local_data_[k * m_ + col]);
+      if (v > best_val) {
+        best_val = v;
+        best = k;
+      }
+    }
+  }
+  return best;
+}
+
 KhruevAGaussJordanMPI::PivotPos KhruevAGaussJordanMPI::FindPivot(int col, int rank, int size) {
   PivotPos local_piv = {.val = -1.0, .rank = rank};
   int rows_per_proc = n_ / size;
@@ -35,6 +67,59 @@ KhruevAGaussJordanMPI::PivotPos KhruevAGaussJordanMPI::FindPivot(int col, int ra
   PivotPos global_piv{};
   MPI_Allreduce(&local_piv, &global_piv, 1, MPI_DOUBLE_INT, MPI_MAXLOC, MPI_COMM_WORLD);
   return global_piv;
+}
+
+void KhruevAGaussJordanMPI::SwapLocalRows(int a, int b) {
+  if (a == b) {
+    return;
+  }
+  std::swap_ranges(local_data_.data() + a * m_, local_data_.data() + (a + 1) * m_, local_data_.data() + b * m_);
+}
+
+void KhruevAGaussJordanMPI::SwapRemoteRows(int my_idx, int other_rank) {
+  std::vector<double> tmp(m_);
+
+  MPI_Sendrecv(local_data_.data() + my_idx * m_, m_, MPI_DOUBLE, other_rank, 0, tmp.data(), m_, MPI_DOUBLE, other_rank,
+               0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+  std::ranges::copy(tmp, local_data_.data() + my_idx * m_);
+}
+
+void KhruevAGaussJordanMPI::NormalizePivotRow(int i, const RowPos &pivot, std::vector<double> &pivot_row, int rank) {
+  if (rank != pivot.rank) {
+    return;
+  }
+
+  double *row = local_data_.data() + pivot.local_idx * m_;
+  double div = row[i];
+
+  if (std::fabs(div) > kEps) {
+    for (int j = i; j < m_; ++j) {
+      row[j] /= div;
+    }
+  }
+  std::ranges::copy(row, row + m_, pivot_row.begin());
+}
+
+void KhruevAGaussJordanMPI::ApplyElimination(int i, const std::vector<double> &pivot_row, int rank, int size) {
+  int rows = n_ / size;
+  int rem = n_ % size;
+  int my_rows = (rank < rem) ? rows + 1 : rows;
+
+  for (int k = 0; k < my_rows; ++k) {
+    if (GetGlobalIdx(k, rank, size) == i) {
+      continue;
+    }
+
+    double *row = local_data_.data() + k * m_;
+    double factor = row[i];
+
+    if (std::fabs(factor) > kEps) {
+      for (int j = i; j < m_; ++j) {
+        row[j] -= factor * pivot_row[j];
+      }
+    }
+  }
 }
 
 void KhruevAGaussJordanMPI::SwapRows(int i, int pivot_rank, int rank, int size) {
