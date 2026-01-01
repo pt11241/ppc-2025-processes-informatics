@@ -64,20 +64,20 @@ void KhruevAGaussJordanMPI::SwapRows(int i, int pivot_rank, int rank, int size) 
 
   if (pivot_rank == target_rank) {
     if (rank == target_rank && local_pivot_idx != target_local_i) {
-      std::swap_ranges(local_data_.begin() + static_cast<long>(local_pivot_idx * m_),
-                       local_data_.begin() + static_cast<long>((local_pivot_idx + 1) * m_),
-                       local_data_.begin() + static_cast<long>(static_cast<long>(target_local_i) * m_));
+      std::swap_ranges(local_data_.begin() + static_cast<size_t>(local_pivot_idx) * m_,
+                       local_data_.begin() + static_cast<size_t>((static_cast<size_t>(local_pivot_idx) + 1) * m_),
+                       local_data_.begin() + static_cast<size_t>(static_cast<size_t>(target_local_i) * m_));
     }
   } else {
     std::vector<double> tmp(m_);
     if (rank == pivot_rank) {
-      MPI_Sendrecv(&local_data_[static_cast<long>(local_pivot_idx) * m_], m_, MPI_DOUBLE, target_rank, 0, tmp.data(),
+      MPI_Sendrecv(&local_data_[static_cast<size_t>(local_pivot_idx) * m_], m_, MPI_DOUBLE, target_rank, 0, tmp.data(),
                    m_, MPI_DOUBLE, target_rank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-      std::copy(tmp.begin(), tmp.end(), &local_data_[local_pivot_idx * m_]);
+      std::copy(tmp.begin(), tmp.end(), &local_data_[static_cast<size_t>(local_pivot_idx) * m_]);
     } else if (rank == target_rank) {
-      MPI_Sendrecv(&local_data_[target_local_i * m_], m_, MPI_DOUBLE, pivot_rank, 0, tmp.data(), m_, MPI_DOUBLE,
-                   pivot_rank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-      std::copy(tmp.begin(), tmp.end(), &local_data_[target_local_i * m_]);
+      MPI_Sendrecv(&local_data_[static_cast<size_t>(target_local_i) * m_], m_, MPI_DOUBLE, pivot_rank, 0, tmp.data(),
+                   m_, MPI_DOUBLE, pivot_rank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      std::copy(tmp.begin(), tmp.end(), &local_data_[static_cast<size_t>(target_local_i) * m_]);
     }
   }
 }
@@ -99,8 +99,8 @@ void KhruevAGaussJordanMPI::Eliminate(int i, int rank, int size) {
         local_data_[(target_local_i * m_) + j] /= divisor;
       }
     }
-    std::copy(local_data_.begin() + target_local_i * m_, local_data_.begin() + (target_local_i + 1) * m_,
-              pivot_row.begin());
+    std::copy(local_data_.begin() + static_cast<size_t>(target_local_i) * m_,
+              local_data_.begin() + static_cast<size_t>(target_local_i + 1) * m_, pivot_row.begin());
   }
 
   MPI_Bcast(pivot_row.data(), m_, MPI_DOUBLE, target_rank, MPI_COMM_WORLD);
@@ -158,10 +158,11 @@ bool KhruevAGaussJordanMPI::PreProcessingImpl() {
   int remainder = n_ % size;
   int my_rows = (rank < remainder) ? (rows_per_proc + 1) : rows_per_proc;
 
-  local_data_.assign(my_rows * m_, 0.0);
+  local_data_.assign(static_cast<size_t>(my_rows) * m_, 0.0);
 
   // Подготовка Scatterv
-  std::vector<int> sendcounts(size), displs(size);
+  std::vector<int> sendcounts(size);
+  std::vector<int> displs(size);
   int offset = 0;
   for (int i = 0; i < size; ++i) {
     sendcounts[i] = ((i < remainder) ? (rows_per_proc + 1) : rows_per_proc) * m_;
@@ -171,9 +172,9 @@ bool KhruevAGaussJordanMPI::PreProcessingImpl() {
 
   std::vector<double> full_matrix_flat;
   if (rank == 0) {
-    full_matrix_flat.resize(n_ * m_);
+    full_matrix_flat.resize(static_cast<size_t>(n_) * m_);
     for (int i = 0; i < n_; ++i) {
-      std::copy(GetInput()[i].begin(), GetInput()[i].end(), full_matrix_flat.begin() + i * m_);
+      std::copy(GetInput()[i].begin(), GetInput()[i].end(), full_matrix_flat.begin() + static_cast<size_t>(i) * m_);
     }
   }
 
@@ -213,7 +214,7 @@ bool KhruevAGaussJordanMPI::PostProcessingImpl() {
 
   std::vector<double> full_results;
   if (rank == 0) {
-    full_results.resize(n_ * m_);
+    full_results.resize(static_cast<size_t>(n_) * m_);
   }
 
   std::vector<int> recvcounts(size);
