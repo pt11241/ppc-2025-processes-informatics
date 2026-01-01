@@ -41,7 +41,7 @@ class KhruevGaussJordanPerfBase : public ppc::util::BaseRunPerfTests<InType, Out
   }
 
   void SetUp() override {
-    GenerateMatrix(200, 20.0);
+    GenerateMatrix(400, 20.0);
   }
 };
 
