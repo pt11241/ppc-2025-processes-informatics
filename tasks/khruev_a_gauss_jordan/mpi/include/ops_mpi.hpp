@@ -21,7 +21,7 @@ class KhruevAGaussJordanMPI : public BaseTask {
     double val;
     int rank;
   };
-  int GetGlobalIdx(int local_k, int rank, int size) const;
+  [[nodiscard]] int GetGlobalIdx(int local_k, int rank, int size) const;
   PivotPos FindPivot(int col, int rank, int size);
   void SwapRows(int i, int pivot_rank, int rank, int size);
   void Eliminate(int i, int rank, int size);
